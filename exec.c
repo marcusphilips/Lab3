@@ -37,7 +37,7 @@ exec(char *path, char **argv)
 
   if((pgdir = setupkvm()) == 0)
     goto bad;
-
+  
   // Load program into memory.
   sz = 0;
   for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){
@@ -66,19 +66,21 @@ exec(char *path, char **argv)
   if((sz = allocuvm(pgdir, sz, sz + 2*PGSIZE)) == 0)
     goto bad;
   clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
-  sp = sz;
-
+  sp = KERNBASE;
+  cprintf("%x\n", sp);
   // Push argument strings, prepare rest of stack in ustack.
   for(argc = 0; argv[argc]; argc++) {
     if(argc >= MAXARG)
       goto bad;
-    sp = (sp - (strlen(argv[argc]) + 1)) & ~3;
-    if(copyout(pgdir, sp, argv[argc], strlen(argv[argc]) + 1) < 0)
+    // sp = (sp - (strlen(argv[argc]) + 1)) & ~3;
+    sp = sp - (strlen(argv[argc]) + 1);
+    cprintf("%x\n", sp);
+    if(copyout(pgdir, sp + (strlen(argv[argc]) + 1), argv[argc], strlen(argv[argc]) ) < 0)
       goto bad;
     ustack[3+argc] = sp;
   }
   ustack[3+argc] = 0;
-
+        
   ustack[0] = 0xffffffff;  // fake return PC
   ustack[1] = argc;
   ustack[2] = sp - (argc+1)*4;  // argv pointer
