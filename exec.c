@@ -12,7 +12,9 @@ exec(char *path, char **argv)
 {
   char *s, *last;
   int i, off;
-  uint argc, sz, sp, ustack[3+MAXARG+1];
+  uint argc, sz, sp;
+  uint* ustack = (uint*)0x7FFFFFFF;
+  int ustack_size = 0;
   struct elfhdr elf;
   struct inode *ip;
   struct proghdr ph;
@@ -75,15 +77,16 @@ exec(char *path, char **argv)
     sp = (sp - (strlen(argv[argc]) + 1)) & ~3;
     if(copyout(pgdir, sp, argv[argc], strlen(argv[argc]) + 1) < 0)
       goto bad;
-    ustack[3+argc] = sp;
+    ustack[-argc-3] = sp;
+    ustack_size += 1;
   }
-  ustack[3+argc] = 0;
-
+  ustack[-3-argc] = 0;
+  ustack_size += 1;
   ustack[0] = 0xffffffff;  // fake return PC
-  ustack[1] = argc;
-  ustack[2] = sp - (argc+1)*4;  // argv pointer
+  ustack[-1] = argc;
+  ustack[-2] = sp - (argc+1)*4;  // argv pointer
 
-  sp -= (3+argc+1) * 4;
+  sp += (3+argc+1) * 4;
   if(copyout(pgdir, sp, ustack, (3+argc+1)*4) < 0)
     goto bad;
 
