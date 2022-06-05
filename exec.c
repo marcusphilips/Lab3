@@ -75,7 +75,7 @@ exec(char *path, char **argv)
     // sp = (sp - (strlen(argv[argc]) + 1)) & ~3;
     sp = sp - (strlen(argv[argc]) + 1);
     cprintf("%x\n", sp);
-    if(copyout(pgdir, sp + (strlen(argv[argc]) + 1), argv[argc], strlen(argv[argc]) ) < 0)
+    if(copyout(pgdir, sp , argv[argc], strlen(argv[argc]) ) < 0)
       goto bad;
     ustack[3+argc] = sp;
   }
