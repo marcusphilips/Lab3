@@ -69,7 +69,7 @@ exec(char *path, char **argv)
   if((sz = allocuvm(pgdir, KERNBASE- 3*PGSIZE, KERNBASE - PGSIZE)) == 0)
     goto bad;
 //  cprintf("sz: %x\n", sz);
-  clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
+//  clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
   sp = KERNBASE - PGSIZE;
   
   // Push argument strings, prepare rest of stack in ustack.

@@ -17,7 +17,7 @@ int
 main(int argc, char *argv[])
 {
   int n, m;
-
+  printf(1, "Running lab3 test\n");
   if(argc != 2){
     printf(1, "Usage: %s levels\n", argv[0]);
     exit();
