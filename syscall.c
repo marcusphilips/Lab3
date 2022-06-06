@@ -13,12 +13,10 @@
 // library system call function. The saved user %esp points
 // to a saved program counter, and then the first argument.
 
-
-
 // Fetch the int at addr from the current process.
 int fetchint(uint addr, int *ip)
 {
-  if (addr > KERNBASE - PGSIZE )
+  if (addr > KERNBASE - PGSIZE)
   {
     return -1;
   }
@@ -32,16 +30,15 @@ int fetchint(uint addr, int *ip)
 int fetchstr(uint addr, char **pp)
 {
   char *s, *ep;
-  //struct proc *curproc = myproc();
- /* cprintf("Proc in need of a string: %s\n", curproc->name);
-  if (addr < curproc->tf->esp && isInitCode(curproc->name) == 0){
-    cprintf("%s quitted\n", curproc->name);
-    return -1;}*/
+  // struct proc *curproc = myproc();
+  /* cprintf("Proc in need of a string: %s\n", curproc->name);
+   if (addr < curproc->tf->esp && isInitCode(curproc->name) == 0){
+     cprintf("%s quitted\n", curproc->name);
+     return -1;}*/
   *pp = (char *)addr;
-  
-  
+
   ep = (char *)(KERNBASE - PGSIZE);
-  //cprintf("Address of ep: %p\n", ep);
+  // cprintf("Address of ep: %p\n", ep);
   for (s = *pp; s < ep; s++)
   {
     if (*s == 0)
@@ -53,7 +50,7 @@ int fetchstr(uint addr, char **pp)
 // Fetch the nth 32-bit system call argument.
 int argint(int n, int *ip)
 {
-  //cprintf("argint: %x\n", myproc()->tf->esp + 4 + 4 * n);
+  // cprintf("argint: %x\n", myproc()->tf->esp + 4 + 4 * n);
   return fetchint((myproc()->tf->esp) + 4 + 4 * n, ip);
 }
 
@@ -63,7 +60,7 @@ int argint(int n, int *ip)
 int argptr(int n, char **pp, int size)
 {
   int i;
-  //struct proc *curproc = myproc();
+  // struct proc *curproc = myproc();
 
   if (argint(n, &i) < 0)
     return -1;

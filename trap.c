@@ -55,7 +55,7 @@ void trap(struct trapframe *tf)
       panic("Failed to allocate new pages\n");
     }
     currproc->numStack++;
-    cprintf("Stack sized increased: %d\n", currproc->numStack);
+    cprintf("Stack sized increased\n");
     currproc->state = RUNNING;
     return;
   }
