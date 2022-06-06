@@ -201,6 +201,7 @@ fork(void)
   *np->tf = *curproc->tf;
   np->numStack = curproc->numStack;
 
+
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
 
