@@ -326,7 +326,7 @@ copyuvm(pde_t *pgdir, uint sz)
     if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
       panic("copyuvm: pte should exist");
     if(!(*pte & PTE_P))
-      panic("copyuvm: page not present");
+      panic("copyuvm: page not present for text and data");
     pa = PTE_ADDR(*pte);
     flags = PTE_FLAGS(*pte);
     if((mem = kalloc()) == 0)
@@ -335,9 +335,28 @@ copyuvm(pde_t *pgdir, uint sz)
     if(mappages(d, (void*)i, PGSIZE, V2P(mem), flags) < 0)
       goto bad;
   }
+
+  uint stack = KERNBASE - PGSIZE;
+  for(i = stack; i > stack - (myproc()->numStack * PGSIZE); i -= PGSIZE){
+    if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
+      panic("copyuvm: pte should exist");
+    // if(!(*pte & PTE_P)){
+    //   cprintf("Cannot copy stack for %s\n", myproc()->name);
+    //   panic("copyuvm: page not present for stack");
+    // }
+    pa = PTE_ADDR(*pte);
+    flags = PTE_FLAGS(*pte);
+    if((mem = kalloc()) == 0)
+      goto bad;
+    memmove(mem, (char*)P2V(pa), PGSIZE);
+    if(mappages(d, (void*)i, PGSIZE, V2P(mem), flags) < 0)
+      goto bad;
+  }
+
   return d;
 
 bad:
+  cprintf("Failed copyuvm for %s\n", myproc()->name);
   freevm(d);
   return 0;
 }
